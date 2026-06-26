@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIFA Simulador PRO</title>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#0f172a;
+      color:#f8fafc;
+      padding:20px;
+      margin:0;
+    }
+    .bloque{
+      background:#1e293b;
+      padding:15px;
+      margin-bottom:15px;
+      border-radius:10px;
+      border:1px solid #334155;
+    }
+    h1,h2,h3{margin-top:0}
+    button{
+      background:#deff9a;
+      color:#000;
+      font-weight:bold;
+      padding:8px 12px;
+      margin:5px 5px 5px 0;
+      border:none;
+      cursor:pointer;
+      border-radius:6px;
+    }
+    button:hover{background:#c5f27b}
+    input,select,textarea{
+      padding:8px;
+      background:#0f172a;
+      color:#fff;
+      border:1px solid #475569;
+      margin:5px 5px 5px 0;
+      border-radius:6px;
+      width:280px;
+      max-width:100%;
+      box-sizing:border-box;
+    }
+    textarea{min-height:80px; width:100%}
+    input[type="file"]{width:auto;max-width:100%}
+    .marcador-input{width:90px;text-align:center}
+    .pais-item,.fila{
+      padding:8px;
+      border-bottom:1px solid #334155;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pais-info,.linea-flex{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      flex-wrap:wrap;
+    }
+    .ranking-contenedor,.historial-contenedor,.torneo-contenedor{
+      max-height:500px;
+      overflow-y:auto;
+      background:#0f172a;
+      padding:10px;
+      border-radius:6px;
+    }
+    .historial-item,.torneo-item{
+      border-bottom:1px solid #334155;
+      padding:10px 0;
+      line-height:1.5;
+    }
+    .sub{font-size:12px;color:#94a3b8}
+    .resultado{
+      margin-top:12px;
+      padding:12px;
+      border-radius:8px;
+      background:#0f172a;
+      border:1px solid #334155;
+      line-height:1.6;
+    }
+    .positivo{color:#86efac}
+    .negativo{color:#fca5a5}
+    .neutro{color:#fde68a}
+    .botones-resultado{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .img-mini,.img-mediana{
+      border-radius:4px;
+      object-fit:cover;
+      border:1px solid #475569;
+      background:#0f172a;
+      flex-shrink:0;
+    }
+    .img-mini{width:28px;height:20px}
+    .img-mediana{width:38px;height:26px}
+    .fila-crear,.fila-torneo{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .preview-bandera{margin-top:8px;display:flex;align-items:center;gap:10px}
+    .preview-bandera img{
+      width:56px;height:38px;border-radius:4px;object-fit:cover;border:1px solid #475569;background:#0f172a;
+    }
+    .sin-imagen{opacity:.6;font-size:12px}
+    .partido-linea{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .grupo-box{
+      background:#111827;
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:10px;
+      margin:10px 0;
+    }
+    .tabla-grupo{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:8px;
+      font-size:14px;
+    }
+    .tabla-grupo th,.tabla-grupo td{
+      border-bottom:1px solid #334155;
+      padding:6px;
+      text-align:left;
+    }
+    .manual-layout{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 260px;
+      gap:12px;
+      align-items:start;
+      margin-top:10px;
+    }
+    .manual-grupos{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:10px;
+    }
+    .manual-slot{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 0;
+      border-top:1px solid #334155;
+    }
+    .manual-slot:first-child{border-top:none}
+    .manual-slot span{width:34px;color:#94a3b8;font-size:12px}
+    .manual-slot input{width:100%;margin:0}
+    .selecciones-lado{
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:10px;
+    }
+    .equipo-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:6px;
+      padding:4px 8px;
+      margin:3px;
+      font-size:13px;
+    }
+    .equipo-chip button{
+      background:#fca5a5;
+      color:#000;
+      padding:0 6px;
+      margin:0;
+      font-size:12px;
+      border-radius:4px;
+    }
+    .copa-card{
+      background:#0f172a;
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:12px;
+      margin:10px 0;
+    }
+    .vista-titulo{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .partido-editor{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      flex-wrap:wrap;
+      padding:6px 0;
+      border-bottom:1px solid #1e293b;
+    }
+    @media(max-width:760px){.manual-layout{grid-template-columns:1fr}}
+
+    /* ── LOGIN OVERLAY ── */
+    #loginOverlay{
+      position:fixed;inset:0;
+      background:#0f172a;
+      z-index:9999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #loginBox{
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:16px;
+      padding:40px 36px;
+      text-align:center;
+      max-width:360px;
+      width:90%;
+      box-shadow:0 8px 32px #0008;
+    }
+    #loginBox h2{margin:0 0 6px;font-size:1.6rem;color:#deff9a;}
+    #loginBox p{color:#94a3b8;font-size:14px;margin:0 0 28px;}
+    #btnGoogle{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      width:100%;padding:12px 20px;
+      background:#fff;color:#1a1a1a;
+      font-size:15px;font-weight:600;
+      border:none;border-radius:8px;cursor:pointer;
+      transition:background .2s;margin:0;
+    }
+    #btnGoogle:hover{background:#f1f5f9;}
+    #btnGoogle svg{flex-shrink:0;}
+    #btnGoogle:disabled{opacity:.6;cursor:not-allowed;}
+
+    /* ── USER BAR (top-right) ── */
+    #userBar{
+      position:fixed;top:14px;right:16px;
+      display:flex;align-items:center;gap:10px;
+      background:#1e293b;
+      border:1px solid #334155;
+      border-radius:30px;
+      padding:6px 14px 6px 8px;
+      z-index:1000;
+    }
+    #userBar img{width:30px;height:30px;border-radius:50%;border:2px solid #deff9a;}
+    #userBar span{font-size:13px;font-weight:600;color:#f8fafc;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    #btnLogout{
+      background:#334155;color:#f8fafc;
+      font-size:12px;padding:4px 10px;margin:0;
+      border-radius:20px;cursor:pointer;font-weight:600;border:none;
+    }
+    #btnLogout:hover{background:#475569;}
+    #loginError{color:#fca5a5;font-size:13px;margin-top:14px;display:none;}
+  </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // ── CONFIGURA AQUÍ TU PROYECTO FIREBASE ──────────────────────────────
+    // 1. Ve a https://console.firebase.google.com
+    // 2. Crea un proyecto → Agrega app web → copia el objeto firebaseConfig
+    // 3. En Authentication → Sign-in method → activa Google
+    // 4. En Authentication → Settings → Authorized domains → agrega tu dominio
+    const firebaseConfig = {
+      apiKey:            "AIzaSyCaXeSyylZ-Eeq6_6cxr3LByg4Ig6APmtE",
+      authDomain:        "fifa-simulador.firebaseapp.com",
+      projectId:         "fifa-simulador",
+      storageBucket:     "fifa-simulador.firebasestorage.app",
+      messagingSenderId: "378960900432",
+      appId:             "1:378960900432:web:77961b8d1c3c98d8367c55"
+    };
+    // ─────────────────────────────────────────────────────────────────────
+
+    const app      = initializeApp(firebaseConfig);
+    const auth     = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Escucha el estado de autenticación
+    onAuthStateChanged(auth, user => {
+      if(user){
+        // Usuario autenticado → ocultar overlay, mostrar app
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("userBar").style.display      = "flex";
+        document.getElementById("userName").textContent        = user.displayName || user.email;
+        document.getElementById("userPhoto").src               = user.photoURL || "";
+        document.getElementById("userPhoto").style.display     = user.photoURL ? "block" : "none";
+      } else {
+        // No autenticado → mostrar overlay
+        document.getElementById("loginOverlay").style.display = "flex";
+        document.getElementById("userBar").style.display      = "none";
+      }
+    });
+
+    // Botón Google
+    document.getElementById("btnGoogle").addEventListener("click", async () => {
+      const btn = document.getElementById("btnGoogle");
+      const err = document.getElementById("loginError");
+      btn.disabled = true;
+      btn.textContent = "Conectando…";
+      err.style.display = "none";
+      try {
+        await signInWithPopup(auth, provider);
+      } catch(e) {
+        err.textContent   = "No se pudo iniciar sesión. Intenta de nuevo.";
+        err.style.display = "block";
+        btn.disabled      = false;
+        btn.innerHTML     = googleBtnHTML();
+      }
+    });
+
+    // Botón cerrar sesión
+    document.getElementById("btnLogout").addEventListener("click", () => signOut(auth));
+
+    function googleBtnHTML(){
+      return `<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.2 0 24 0 14.6 0 6.6 5.5 2.7 13.5l7.8 6C12.5 13.1 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17z"/><path fill="#FBBC05" d="M10.5 28.5c-.5-1.5-.8-3-.8-4.5s.3-3 .8-4.5l-7.8-6C1 16.5 0 20.1 0 24s1 7.5 2.7 10.5l7.8-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.3-7.7 2.3-6.2 0-11.5-4.2-13.4-9.8l-7.8 6C6.6 42.5 14.6 48 24 48z"/></svg>
+      Continuar con Google`;
+    }
+  </script>
+</head>
+<body>
+
+  <!-- ── LOGIN OVERLAY ─────────────────────────────────────────── -->
+  <div id="loginOverlay">
+    <div id="loginBox">
+      <h2>⚽ FIFA Simulador PRO</h2>
+      <p>Inicia sesión para guardar tu ranking,<br>historial y torneos en la nube.</p>
+      <button id="btnGoogle">
+        <svg width="20" height="20" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.8 2.5 30.2 0 24 0 14.6 0 6.6 5.5 2.7 13.5l7.8 6C12.5 13.1 17.8 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17z"/>
+          <path fill="#FBBC05" d="M10.5 28.5c-.5-1.5-.8-3-.8-4.5s.3-3 .8-4.5l-7.8-6C1 16.5 0 20.1 0 24s1 7.5 2.7 10.5l7.8-6z"/>
+          <path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.3-7.7 2.3-6.2 0-11.5-4.2-13.4-9.8l-7.8 6C6.6 42.5 14.6 48 24 48z"/>
+        </svg>
+        Continuar con Google
+      </button>
+      <div id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- ── USER BAR (esquina superior derecha) ───────────────────── -->
+  <div id="userBar" style="display:none;">
+    <img id="userPhoto" src="" alt="foto">
+    <span id="userName"></span>
+    <button id="btnLogout">Cerrar sesión</button>
+  </div>
+
+  <h1>FIFA SIMULADOR PRO</h1>
+
+  <div class="bloque">
+    <h3>➕ Crear nuevo país / selección</h3>
+    <p class="sub">Agrega selecciones nuevas para que aparezcan en el ranking, buscador, historial y torneos. También puedes subirles bandera o escudo.</p>
+    <div class="fila-crear">
+      <input type="text" id="nuevoPais" placeholder="Ej: Cataluña, Zulia, etc.">
+      <input type="url" id="urlImagenNuevoPais" placeholder="URL de bandera o escudo">
+      <input type="file" id="imagenNuevoPais" accept="image/*">
+      <button onclick="agregarNuevoPais()">Agregar selección</button>
+    </div>
+    <div class="preview-bandera" id="previewNuevoPais">
+      <span class="sin-imagen">Sin imagen seleccionada</span>
+    </div>
+  </div>
+
+  <div class="bloque">
+    <h3>⚽ Simulador de Partido</h3>
+    <p class="sub">Escribe el país, selecciónalo del desplegable y agrega el marcador manual</p>
+
+    <input list="listaPaisesSeleccionados" type="text" id="nombreLocal" placeholder="País Local">
+    <span style="font-weight:bold;">VS</span>
+    <input list="listaPaisesSeleccionados" type="text" id="nombreVisita" placeholder="País Visitante">
+
+    <datalist id="listaPaisesSeleccionados"></datalist>
+    <datalist id="listaPaisesTorneo"></datalist>
+
+    <br><br>
+
+    <label>Marcador:</label>
+    <input type="number" id="golesLocal" class="marcador-input" min="0" placeholder="Local">
+    <span style="font-weight:bold;">-</span>
+    <input type="number" id="golesVisita" class="marcador-input" min="0" placeholder="Visita">
+
+    <br><br>
+
+    <select id="tipoPartido">
+      <option value="amistoso_fuera">Amistoso fuera de fecha FIFA (I=5)</option>
+      <option value="amistoso_fecha_fifa" selected>Amistoso en fecha FIFA (I=10)</option>
+      <option value="nations_grupos">Nations League / fase de grupos (I=15)</option>
+      <option value="eliminatoria_mundial">Eliminatoria al Mundial (I=25)</option>
+      <option value="fase_grupos_mundial">Fase de grupos del Mundial (I=50)</option>
+      <option value="octavos_mundial">Octavos / 16avos del Mundial (I=50)</option>
+      <option value="cuartos_mundial">Cuartos del Mundial (I=60)</option>
+      <option value="semis_mundial">Semifinal del Mundial (I=60)</option>
+      <option value="tercer_puesto_mundial">Tercer puesto del Mundial (I=60)</option>
+      <option value="final_mundial">Final del Mundial (I=60)</option>
+      <option value="fase_grupos_copa_confederaciones">Fase de grupos Copa Confederaciones (I=35)</option>
+      <option value="semis_copa_confederaciones">Semifinal Copa Confederaciones (I=40)</option>
+      <option value="final_copa_confederaciones">Final Copa Confederaciones (I=40)</option>
+      <option value="fase_grupos_copa_continental">Fase de grupos Copa continental (Copa Oro, Copa América, Euro, etc.) (I=35)</option>
+      <option value="cuartos_copa_continental">Cuartos Copa continental (I=40)</option>
+      <option value="semis_copa_continental">Semifinal Copa continental (I=40)</option>
+      <option value="tercer_puesto_copa_continental">Tercer puesto Copa continental (I=40)</option>
+      <option value="final_copa_continental">Final Copa continental (I=40)</option>
+    </select>
+
+    <div class="botones-resultado">
+      <button onclick="procesarPartido('normal')">Guardar partido normal</button>
+      <button onclick="procesarPartido('penales_local')">Ganó Local en penales</button>
+      <button onclick="procesarPartido('penales_visita')">Ganó Visitante en penales</button>
+      <button onclick="simularPartidoAutomatico()">Simular automático</button>
+    </div>
+
+    <div class="resultado" id="ultimoResultado">
+      Aún no hay partidos jugados.
+    </div>
+  </div>
+
+  <div class="bloque">
+    <h3>🏆 Copas y torneos</h3>
+    <p class="sub">Crea una copa, configura sus grupos y guarda resultados. Tus torneos quedan guardados para volver cuando quieras.</p>
+
+    <div class="fila-torneo">
+      <button onclick="mostrarCopasGuardadas()">Copas guardadas</button>
+      <button onclick="iniciarConfigTorneo('mundial')">Copa del Mundo</button>
+      <button onclick="iniciarConfigTorneo('confederaciones')">Copa Confederaciones</button>
+      <button onclick="iniciarConfigTorneo('nacional')">La Nacional</button>
+    </div>
+
+    <div class="torneo-contenedor" id="torneoVista">
+      No hay torneo abierto.
+    </div>
+  </div>
+  <div class="bloque">
+    <h3>📊 Ranking Mundial</h3>
+    <button onclick="reiniciarPuntos()">🔄 Reiniciar Todo a 0.0 pts</button>
+    <br><br>
+    <div class="ranking-contenedor" id="ranking"></div>
+  </div>
+
+  <div class="bloque">
+    <h3>📝 Historial de Partidos</h3>
+    <button onclick="borrarHistorial()">🗑️ Borrar historial</button>
+    <br><br>
+    <div class="fila-flex" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <label for="filtroHistorialPais">Filtrar por selección:</label>
+      <select id="filtroHistorialPais" onchange="renderHistorial()">
+        <option value="">Todos los partidos</option>
+      </select>
+      <button onclick="limpiarFiltroHistorial()">Ver todos</button>
+    </div>
+    <div class="historial-contenedor" id="historial"></div>
+  </div>
+
+<script>
+const paisesBase = [
+  "Argentina","Austria","Francia","Irak","España","Arabia Saudí","Inglaterra","Ghana","Brasil","Escocia",
+  "Marruecos","Haití","Portugal","Uzbekistán","Países Bajos","Túnez","Alemania","Ecuador","Bélgica","RI de Irán",
+  "México","Chequia","Colombia","RD Congo","EE. UU.","Turquía","Italia","Croacia","Panamá","Japón",
+  "Suecia","Suiza","Canadá","Uruguay","Islas de Cabo Verde","Senegal","Noruega","Dinamarca","República de Corea","Sudáfrica",
+  "Nigeria","Australia","Egipto","Nueva Zelanda","Argelia","Jordania","Ucrania","Rusia","Polonia","Paraguay",
+  "Gales","Hungría","Serbia","Camerún","Eslovaquia","Grecia","Venezuela","Chile","Perú","Costa Rica",
+  "Rumanía","Mali","República de Irlanda","Eslovenia","Catar","Burkina Faso","Honduras","Albania","Emiratos Árabes Unidos","Macedonia del Norte",
+  "Irlanda del Norte","Jamaica","Georgia","Islandia","Finlandia","Israel","Bolivia","Kosovo","Omán","Montenegro",
+  "Curazao","Guinea","Siria","Gabón","Bulgaria","Angola","Uganda","Zambia","RP China","Baréin",
+  "Benín","Tailandia","Palestina","Bielorrusia","Guatemala","Luxemburgo","Vietnam","El Salvador","Tayikistán","Trinidad y Tobago",
+  "Mozambique","Madagascar","Guinea Ecuatorial","Kirguizistán","Armenia","Comoras","Kenia","Libia","Kazajistán","Tanzania",
+  "Mauritania","Níger","Líbano","Gambia","Sudán","Indonesia","Togo","RPD de Corea","Namibia","Sierra Leona",
+  "Islas Feroe","Chipre","Surinam","Azerbaiyán","Estonia","Ruanda","Malaui","Zimbabue","Nicaragua","Guinea-Bisáu",
+  "Kuwait","Congo","Filipinas","Malasia","Letonia","India","República Centroafricana","Liberia","Turkmenistán","Burundi",
+  "Etiopía","República Dominicana","Yemen","Lesoto","Botsuana","Singapur","Lituania","Guyana","Nueva Caledonia","San Cristóbal y Nieves",
+  "Islas Salomón","Puerto Rico","Fiyi","Hong Kong","Tahití","Myanmar","Moldavia","Vanuatu","Malta","Antigua y Barbuda",
+  "Granada","Cuba","Suazilandia","Santa Lucía","Bermuda","Papúa Nueva Guinea","Sudán del Sur","San Vicente y las Granadinas","Afganistán","Andorra",
+  "Maldivas","China Taipéi","Camboya","Montserrat","Nepal","Mauricio","Barbados","Belice","Bangladés","Dominica",
+  "Chad","Eritrea","Laos","Islas Cook","Sri Lanka","Samoa","Aruba","Mongolia","Samoa Estadounidense","Bután",
+  "Macao","Brunéi Darusalam","Santo Tomé y Príncipe","Yibuti","Islas Caimán","Pakistán","Somalia","Tonga","Timor Oriental","Gibraltar",
+  "Guam","Seychelles","Islas Turcas y Caicos","Liechtenstein","Bahamas","Islas Vírgenes Estadounidenses","Islas Vírgenes Británicas","Anguilla","San Marino",
+  "Bonaire","Bosnia y Herzegovina"
+];
+
+const STORAGE_KEY = "fifa_simulador_puntos_v9";
+const STORAGE_HISTORIAL = "fifa_simulador_historial_v3";
+const STORAGE_PAISES = "fifa_simulador_paises_custom_v4";
+const STORAGE_IMAGENES = "fifa_simulador_imagenes_paises_v2";
+const STORAGE_TORNEO = "fifa_simulador_torneo_v2";
+const STORAGE_TORNEOS = "fifa_simulador_torneos_guardados_v1";
+
+// Códigos ISO para banderas PNG vía CDN
+const codigosBandera = {
+  "afganistan":"af","albania":"al","alemania":"de","andorra":"ad","angola":"ao","anguilla":"ai",
+  "antigua-y-barbuda":"ag","arabia-saudi":"sa","argelia":"dz","argentina":"ar","armenia":"am","aruba":"aw",
+  "australia":"au","austria":"at","azerbaiyan":"az","bahamas":"bs","banglades":"bd","barbados":"bb",
+  "barein":"bh","belgica":"be","belice":"bz","benin":"bj","bermuda":"bm","bielorrusia":"by",
+  "bolivia":"bo","bonaire":"bq","bosnia-y-herzegovina":"ba","botsuana":"bw","brasil":"br",
+  "brunei-darusalam":"bn","bulgaria":"bg","burkina-faso":"bf","burundi":"bi","butan":"bt","camboya":"kh",
+  "camerun":"cm","canada":"ca","catar":"qa","chad":"td","chequia":"cz","chile":"cl",
+  "china-taipei":"tw","chipre":"cy","colombia":"co","comoras":"km","congo":"cg","costa-rica":"cr",
+  "croacia":"hr","cuba":"cu","curazao":"cw","dinamarca":"dk","dominica":"dm","ecuador":"ec",
+  "ee-uu":"us","egipto":"eg","el-salvador":"sv","emiratos-arabes-unidos":"ae","eritrea":"er",
+  "escocia":"gb-sct","eslovaquia":"sk","eslovenia":"si","espana":"es","estonia":"ee","etiopia":"et",
+  "fiyi":"fj","filipinas":"ph","finlandia":"fi","francia":"fr","gabon":"ga","gales":"gb-wls",
+  "gambia":"gm","georgia":"ge","ghana":"gh","gibraltar":"gi","granada":"gd","grecia":"gr",
+  "guam":"gu","guatemala":"gt","guinea":"gn","guinea-bisau":"gw","guinea-ecuatorial":"gq","guyana":"gy",
+  "haiti":"ht","honduras":"hn","hong-kong":"hk","hungria":"hu","india":"in","indonesia":"id",
+  "inglaterra":"gb-eng","irak":"iq","irlanda-del-norte":"gb-nir","islandia":"is","islas-caiman":"ky",
+  "islas-cook":"ck","islas-de-cabo-verde":"cv","islas-feroe":"fo","islas-salomon":"sb",
+  "islas-turcas-y-caicos":"tc","islas-virgenes-britanicas":"vg","islas-virgenes-estadounidenses":"vi",
+  "israel":"il","italia":"it","jamaica":"jm","japon":"jp","jordania":"jo","kazajistan":"kz",
+  "kenia":"ke","kirguizistan":"kg","kosovo":"xk","kuwait":"kw","laos":"la","lesoto":"ls",
+  "letonia":"lv","libano":"lb","liberia":"lr","libia":"ly","liechtenstein":"li","lituania":"lt",
+  "luxemburgo":"lu","macao":"mo","macedonia-del-norte":"mk","madagascar":"mg","malasia":"my",
+  "malaui":"mw","maldivas":"mv","mali":"ml","malta":"mt","marruecos":"ma","mauricio":"mu",
+  "mauritania":"mr","mexico":"mx","moldavia":"md","mongolia":"mn","montenegro":"me","montserrat":"ms",
+  "mozambique":"mz","myanmar":"mm","namibia":"na","nepal":"np","nicaragua":"ni","niger":"ne",
+  "nigeria":"ng","noruega":"no","nueva-caledonia":"nc","nueva-zelanda":"nz","oman":"om",
+  "paises-bajos":"nl","pakistan":"pk","palestina":"ps","panama":"pa","papua-nueva-guinea":"pg",
+  "paraguay":"py","peru":"pe","polonia":"pl","portugal":"pt","puerto-rico":"pr","rd-congo":"cd",
+  "republica-centroafricana":"cf","republica-de-corea":"kr","republica-de-irlanda":"ie",
+  "republica-dominicana":"do","ri-de-iran":"ir","rpd-de-corea":"kp","rp-china":"cn","ruanda":"rw",
+  "rumania":"ro","rusia":"ru","samoa":"ws","samoa-estadounidense":"as","san-cristobal-y-nieves":"kn",
+  "san-marino":"sm","san-vicente-y-las-granadinas":"vc","santa-lucia":"lc","santo-tome-y-principe":"st",
+  "senegal":"sn","serbia":"rs","seychelles":"sc","sierra-leona":"sl","singapur":"sg","siria":"sy",
+  "somalia":"so","sri-lanka":"lk","suazilandia":"sz","sudafrica":"za","sudan":"sd","sudan-del-sur":"ss",
+  "suecia":"se","suiza":"ch","surinam":"sr","tahiti":"pf","tailandia":"th","taipei-chino":"tw",
+  "tayikistan":"tj","tanzania":"tz","timor-oriental":"tl","togo":"tg","tonga":"to",
+  "trinidad-y-tobago":"tt","tunez":"tn","turkmenistan":"tm","turquia":"tr","ucrania":"ua",
+  "uganda":"ug","uruguay":"uy","uzbekistan":"uz","vanuatu":"vu","venezuela":"ve","vietnam":"vn",
+  "yemen":"ye","yibuti":"dj","zambia":"zm","zimbabue":"zw"
+};
+
+// Emojis de bandera como respaldo (no funcionan en Windows, pero sí en móvil/Mac/Linux)
+const emojisBandera = {
+  "afganistan":"🇦🇫","albania":"🇦🇱","alemania":"🇩🇪","andorra":"🇦🇩","angola":"🇦🇴","anguilla":"🇦🇮",
+  "antigua-y-barbuda":"🇦🇬","arabia-saudi":"🇸🇦","argelia":"🇩🇿","argentina":"🇦🇷","armenia":"🇦🇲","aruba":"🇦🇼",
+  "australia":"🇦🇺","austria":"🇦🇹","azerbaiyan":"🇦🇿","bahamas":"🇧🇸","banglades":"🇧🇩","barbados":"🇧🇧",
+  "barein":"🇧🇭","belgica":"🇧🇪","belice":"🇧🇿","benin":"🇧🇯","bermuda":"🇧🇲","bielorrusia":"🇧🇾",
+  "bolivia":"🇧🇴","bonaire":"🇧🇶","bosnia-y-herzegovina":"🇧🇦","botsuana":"🇧🇼","brasil":"🇧🇷",
+  "brunei-darusalam":"🇧🇳","bulgaria":"🇧🇬","burkina-faso":"🇧🇫","burundi":"🇧🇮","butan":"🇧🇹","camboya":"🇰🇭",
+  "camerun":"🇨🇲","canada":"🇨🇦","catar":"🇶🇦","chad":"🇹🇩","chequia":"🇨🇿","chile":"🇨🇱",
+  "china-taipei":"🇹🇼","chipre":"🇨🇾","colombia":"🇨🇴","comoras":"🇰🇲","congo":"🇨🇬","costa-rica":"🇨🇷",
+  "croacia":"🇭🇷","cuba":"🇨🇺","curazao":"🇨🇼","dinamarca":"🇩🇰","dominica":"🇩🇲","ecuador":"🇪🇨",
+  "ee-uu":"🇺🇸","egipto":"🇪🇬","el-salvador":"🇸🇻","emiratos-arabes-unidos":"🇦🇪","eritrea":"🇪🇷",
+  "escocia":"🏴󠁧󠁢󠁳󠁣󠁴󠁿","eslovaquia":"🇸🇰","eslovenia":"🇸🇮","espana":"🇪🇸","estonia":"🇪🇪","etiopia":"🇪🇹",
+  "fiyi":"🇫🇯","filipinas":"🇵🇭","finlandia":"🇫🇮","francia":"🇫🇷","gabon":"🇬🇦","gales":"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+  "gambia":"🇬🇲","georgia":"🇬🇪","ghana":"🇬🇭","gibraltar":"🇬🇮","granada":"🇬🇩","grecia":"🇬🇷",
+  "guam":"🇬🇺","guatemala":"🇬🇹","guinea":"🇬🇳","guinea-bisau":"🇬🇼","guinea-ecuatorial":"🇬🇶","guyana":"🇬🇾",
+  "haiti":"🇭🇹","honduras":"🇭🇳","hong-kong":"🇭🇰","hungria":"🇭🇺","india":"🇮🇳","indonesia":"🇮🇩",
+  "inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","irak":"🇮🇶","irlanda-del-norte":"🇬🇧","islandia":"🇮🇸","islas-caiman":"🇰🇾",
+  "islas-cook":"🇨🇰","islas-de-cabo-verde":"🇨🇻","islas-feroe":"🇫🇴","islas-salomon":"🇸🇧",
+  "islas-turcas-y-caicos":"🇹🇨","islas-virgenes-britanicas":"🇻🇬","islas-virgenes-estadounidenses":"🇻🇮",
+  "israel":"🇮🇱","italia":"🇮🇹","jamaica":"🇯🇲","japon":"🇯🇵","jordania":"🇯🇴","kazajistan":"🇰🇿",
+  "kenia":"🇰🇪","kirguizistan":"🇰🇬","kosovo":"🇽🇰","kuwait":"🇰🇼","laos":"🇱🇦","lesoto":"🇱🇸",
+  "letonia":"🇱🇻","libano":"🇱🇧","liberia":"🇱🇷","libia":"🇱🇾","liechtenstein":"🇱🇮","lituania":"🇱🇹",
+  "luxemburgo":"🇱🇺","macao":"🇲🇴","macedonia-del-norte":"🇲🇰","madagascar":"🇲🇬","malasia":"🇲🇾",
+  "malaui":"🇲🇼","maldivas":"🇲🇻","mali":"🇲🇱","malta":"🇲🇹","marruecos":"🇲🇦","mauricio":"🇲🇺",
+  "mauritania":"🇲🇷","mexico":"🇲🇽","moldavia":"🇲🇩","mongolia":"🇲🇳","montenegro":"🇲🇪","montserrat":"🇲🇸",
+  "mozambique":"🇲🇿","myanmar":"🇲🇲","namibia":"🇳🇦","nepal":"🇳🇵","nicaragua":"🇳🇮","niger":"🇳🇪",
+  "nigeria":"🇳🇬","noruega":"🇳🇴","nueva-caledonia":"🇳🇨","nueva-zelanda":"🇳🇿","oman":"🇴🇲",
+  "paises-bajos":"🇳🇱","pakistan":"🇵🇰","palestina":"🇵🇸","panama":"🇵🇦","papua-nueva-guinea":"🇵🇬",
+  "paraguay":"🇵🇾","peru":"🇵🇪","polonia":"🇵🇱","portugal":"🇵🇹","puerto-rico":"🇵🇷","rd-congo":"🇨🇩",
+  "republica-centroafricana":"🇨🇫","republica-de-corea":"🇰🇷","republica-de-irlanda":"🇮🇪",
+  "republica-dominicana":"🇩🇴","ri-de-iran":"🇮🇷","rpd-de-corea":"🇰🇵","rp-china":"🇨🇳","ruanda":"🇷🇼",
+  "rumania":"🇷🇴","rusia":"🇷🇺","samoa":"🇼🇸","samoa-estadounidense":"🇦🇸","san-cristobal-y-nieves":"🇰🇳",
+  "san-marino":"🇸🇲","san-vicente-y-las-granadinas":"🇻🇨","santa-lucia":"🇱🇨","santo-tome-y-principe":"🇸🇹",
+  "senegal":"🇸🇳","serbia":"🇷🇸","seychelles":"🇸🇨","sierra-leona":"🇸🇱","singapur":"🇸🇬","siria":"🇸🇾",
+  "somalia":"🇸🇴","sri-lanka":"🇱🇰","suazilandia":"🇸🇿","sudafrica":"🇿🇦","sudan":"🇸🇩","sudan-del-sur":"🇸🇸",
+  "suecia":"🇸🇪","suiza":"🇨🇭","surinam":"🇸🇷","tahiti":"🇵🇫","tailandia":"🇹🇭","taipei-chino":"🇹🇼",
+  "tayikistan":"🇹🇯","tanzania":"🇹🇿","timor-oriental":"🇹🇱","togo":"🇹🇬","tonga":"🇹🇴",
+  "trinidad-y-tobago":"🇹🇹","tunez":"🇹🇳","turkmenistan":"🇹🇲","turquia":"🇹🇷","ucrania":"🇺🇦",
+  "uganda":"🇺🇬","uruguay":"🇺🇾","uzbekistan":"🇺🇿","vanuatu":"🇻🇺","venezuela":"🇻🇪","vietnam":"🇻🇳",
+  "yemen":"🇾🇪","yibuti":"🇩🇯","zambia":"🇿🇲","zimbabue":"🇿🇼"
+};
+
+// Banderas PNG reales desde flagcdn.com (CDN confiable, soporta gb-eng / gb-sct / gb-wls)
+function obtenerBanderaPorURL(pais){
+  const codigo = codigosBandera[normalizarEntrada(pais)];
+  return codigo ? `https://flagcdn.com/w80/${codigo}.png` : "";
+}
+
+function obtenerEmojiPais(pais){
+  return emojisBandera[normalizarEntrada(pais)] || "🏳️";
+}
+
+
+let paises = [];
+let historial = [];
+const puntos = {};
+let imagenesPaises = {};
+let imagenTemporalNuevoPais = "";
+let mapaPaises = {};
+let torneoActual = null;
+let torneosGuardados = [];
+let torneoConfigTemporal = null;
+
+const importanciaPartido = {
+  amistoso_fuera: 5,
+  amistoso_fecha_fifa: 10,
+  nations_grupos: 15,
+  eliminatoria_mundial: 25,
+  fase_grupos_mundial: 50,
+  octavos_mundial: 50,
+  cuartos_mundial: 60,
+  semis_mundial: 60,
+  tercer_puesto_mundial: 60,
+  final_mundial: 60,
+  fase_grupos_copa_confederaciones: 35,
+  semis_copa_confederaciones: 40,
+  final_copa_confederaciones: 40,
+  fase_grupos_copa_continental: 35,
+  cuartos_copa_continental: 40,
+  semis_copa_continental: 40,
+  tercer_puesto_copa_continental: 40,
+  final_copa_continental: 40
+};
+
+function normalizarEntrada(texto){
+  return texto.trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\./g,"")
+    .replace(/\s+/g,"-")
+    .toLowerCase();
+}
+
+function reconstruirMapaPaises(){
+  mapaPaises = {};
+  paises.forEach(p => {
+    mapaPaises[normalizarEntrada(p)] = p;
+  });
+}
+
+function cargarPaises(){
+  const guardados = JSON.parse(localStorage.getItem(STORAGE_PAISES) || "[]");
+  paises = [...paisesBase];
+  guardados.forEach(p => {
+    if (!paises.includes(p)) paises.push(p);
+  });
+  reconstruirMapaPaises();
+  paises.forEach(p => {
+    if (typeof puntos[p] !== "number") puntos[p] = 0.0;
+  });
+}
+
+function guardarPaisesCustom(){
+  const custom = paises.filter(p => !paisesBase.includes(p));
+  localStorage.setItem(STORAGE_PAISES, JSON.stringify(custom));
+}
+
+function guardarImagenesPaises(){
+  localStorage.setItem(STORAGE_IMAGENES, JSON.stringify(imagenesPaises));
+}
+
+function cargarImagenesPaises(){
+  const data = localStorage.getItem(STORAGE_IMAGENES);
+  if (!data) return;
+  try{
+    imagenesPaises = JSON.parse(data) || {};
+  }catch(e){
+    imagenesPaises = {};
+  }
+}
+
+function obtenerImagenPais(pais){
+  return imagenesPaises[pais] || obtenerBanderaPorURL(pais) || "";
+}
+
+function crearImgPaisHTML(pais, clase="img-mini"){
+  // Imagen personalizada del usuario
+  const imgCustom = imagenesPaises[pais];
+  if(imgCustom){
+    return `<img src="${imgCustom}" alt="${pais}" class="${clase}" onerror="this.style.display='none'">`;
+  }
+  // PNG de flagcdn con emoji como fallback si falla la carga
+  const urlPNG = obtenerBanderaPorURL(pais);
+  const emoji = obtenerEmojiPais(pais);
+  const size = clase === "img-mediana" ? "28px" : "20px";
+  if(urlPNG){
+    return `<img src="${urlPNG}" alt="${pais}" class="${clase}" onerror="this.outerHTML='<span style=\\'font-size:${size};line-height:1;flex-shrink:0;\\'>${emoji}</span>'">`;
+  }
+  return `<span style="font-size:${size};line-height:1;flex-shrink:0;" title="${pais}">${emoji}</span>`;
+}
+
+function cargarListaPaises(){
+  // Todos los países van en listaPaisesSeleccionados (simulador de partido, agregar al torneo, slots manuales)
+  const datalist = document.getElementById("listaPaisesSeleccionados");
+  datalist.innerHTML = "";
+  const ordenados = [...paises].sort((a,b)=>a.localeCompare(b,"es"));
+  ordenados.forEach(pais=>{
+    const option = document.createElement("option");
+    option.value = pais;
+    datalist.appendChild(option);
+  });
+}
+
+function actualizarListaTorneo(equipos){
+  // Solo los países seleccionados para el torneo en curso
+  const datalist = document.getElementById("listaPaisesTorneo");
+  datalist.innerHTML = "";
+  (equipos || []).forEach(pais=>{
+    const option = document.createElement("option");
+    option.value = pais;
+    datalist.appendChild(option);
+  });
+}
+
+function mostrarPreviewNuevoPais(src=""){
+  const cont = document.getElementById("previewNuevoPais");
+  if(!src){
+    cont.innerHTML = `<span class="sin-imagen">Sin imagen seleccionada</span>`;
+    return;
+  }
+  cont.innerHTML = `
+    <img src="${src}" alt="preview">
+    <span class="sub">Imagen lista para la nueva selección</span>
+  `;
+}
+
+function leerArchivoComoBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function manejarURLNuevoPais(){
+  const input = document.getElementById("urlImagenNuevoPais");
+  imagenTemporalNuevoPais = input.value.trim();
+  mostrarPreviewNuevoPais(imagenTemporalNuevoPais);
+}
+
+async function manejarArchivoNuevoPais(){
+  const input = document.getElementById("imagenNuevoPais");
+  const archivo = input.files[0];
+
+  if(!archivo){
+    imagenTemporalNuevoPais = "";
+    mostrarPreviewNuevoPais("");
+    return;
+  }
+
+  try{
+    const base64 = await leerArchivoComoBase64(archivo);
+    imagenTemporalNuevoPais = base64;
+    mostrarPreviewNuevoPais(base64);
+  }catch(e){
+    alert("No se pudo leer la imagen.");
+    imagenTemporalNuevoPais = "";
+    mostrarPreviewNuevoPais("");
+  }
+}
+
+function agregarNuevoPais(){
+  const input = document.getElementById("nuevoPais");
+  const nombre = input.value.trim();
+
+  if(!nombre){
+    alert("Escribe un nombre para la nueva selección.");
+    return;
+  }
+
+  const normalizado = normalizarEntrada(nombre);
+
+  if(mapaPaises[normalizado]){
+    alert("Ese país/selección ya existe.");
+    return;
+  }
+
+  paises.push(nombre);
+  puntos[nombre] = 0.0;
+
+  if(imagenTemporalNuevoPais){
+    imagenesPaises[nombre] = imagenTemporalNuevoPais;
+  }
+
+  reconstruirMapaPaises();
+  guardarPaisesCustom();
+  guardarPuntos();
+  guardarImagenesPaises();
+  cargarListaPaises();
+  renderRanking();
+
+  input.value = "";
+  document.getElementById("imagenNuevoPais").value = "";
+  imagenTemporalNuevoPais = "";
+  mostrarPreviewNuevoPais("");
+
+  alert("Selección agregada correctamente.");
+}
+
+function guardarPuntos(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(puntos));
+}
+
+function cargarPuntosGuardados(){
+  const data = localStorage.getItem(STORAGE_KEY);
+  if(!data) return;
+  try{
+    const guardado = JSON.parse(data);
+    Object.keys(guardado).forEach(pais=>{
+      if(typeof guardado[pais] === "number"){
+        puntos[pais] = guardado[pais];
+      }
+    });
+  }catch(e){}
+}
+
+function guardarHistorial(){
+  localStorage.setItem(STORAGE_HISTORIAL, JSON.stringify(historial));
+}
+
+function cargarHistorial(){
+  const data = localStorage.getItem(STORAGE_HISTORIAL);
+  if(!data) return;
+  try{
+    historial = JSON.parse(data) || [];
+  }catch(e){
+    historial = [];
+  }
+}
+
+function renderRanking(){
+  const contenedor = document.getElementById("ranking");
+  contenedor.innerHTML = "";
+
+  const ordenados = [...paises].sort((a,b)=>{
+    if((puntos[b]||0)!==(puntos[a]||0)) return (puntos[b]||0)-(puntos[a]||0);
+    return a.localeCompare(b,"es");
+  });
+
+  ordenados.forEach((pais,i)=>{
+    const div = document.createElement("div");
+    div.className = "pais-item";
+    div.innerHTML = `
+      <div class="pais-info">
+        ${crearImgPaisHTML(pais)}
+        <span>#${i+1} ${pais}</span>
+      </div>
+      <span>${(puntos[pais]||0).toFixed(1)} pts</span>
+    `;
+    contenedor.appendChild(div);
+  });
+}
+
+function llenarFiltroHistorial(){
+  const select = document.getElementById("filtroHistorialPais");
+  if(!select) return;
+  const seleccionado = select.value;
+  const ordenados = [...paises].sort((a,b)=>a.localeCompare(b,"es"));
+  select.innerHTML = `<option value="">Todos los partidos</option>` +
+    ordenados.map(p=>`<option value="${p}">${p}</option>`).join("");
+  // Mantener la selección previa si sigue existiendo
+  if(seleccionado && paises.includes(seleccionado)) select.value = seleccionado;
+}
+
+function limpiarFiltroHistorial(){
+  const select = document.getElementById("filtroHistorialPais");
+  if(select) select.value = "";
+  renderHistorial();
+}
+
+function calcularResumenPais(pais){
+  let pj=0, pg=0, pe=0, pp=0, gf=0, gc=0, ptsTotal=0;
+  historial.forEach(partido=>{
+    let esLocal = partido.local === pais;
+    let esVisita = partido.visita === pais;
+    if(!esLocal && !esVisita) return;
+    pj++;
+    const golesF = esLocal ? partido.golesLocal : partido.golesVisita;
+    const golesC = esLocal ? partido.golesVisita : partido.golesLocal;
+    gf += golesF; gc += golesC;
+    ptsTotal += esLocal ? partido.cambioLocal : partido.cambioVisita;
+    if(golesF > golesC) pg++;
+    else if(golesF < golesC) pp++;
+    else pe++;
+  });
+  return {pj,pg,pe,pp,gf,gc,ptsTotal};
+}
+
+function renderHistorial(){
+  const contenedor = document.getElementById("historial");
+  contenedor.innerHTML = "";
+
+  llenarFiltroHistorial();
+  const select = document.getElementById("filtroHistorialPais");
+  const filtro = select ? select.value : "";
+
+  if(historial.length === 0){
+    contenedor.innerHTML = `<div class="sub">No hay partidos guardados.</div>`;
+    return;
+  }
+
+  let lista = historial.slice().reverse();
+  if(filtro){
+    lista = lista.filter(p => p.local === filtro || p.visita === filtro);
+
+    const r = calcularResumenPais(filtro);
+    const claseTotal = r.ptsTotal > 0 ? "positivo" : r.ptsTotal < 0 ? "negativo" : "neutro";
+    const signoTotal = r.ptsTotal > 0 ? "+" : "";
+    const resumen = document.createElement("div");
+    resumen.className = "historial-item";
+    resumen.innerHTML = `
+      <div class="partido-linea">
+        ${crearImgPaisHTML(filtro,"img-mediana")}
+        <strong>${filtro}</strong>
+      </div>
+      <span class="sub">Resumen | ${r.pj} partidos jugados</span><br>
+      <span>✅ ${r.pg} ganados &nbsp; 🤝 ${r.pe} empatados &nbsp; ❌ ${r.pp} perdidos</span><br>
+      <span>Goles: ${r.gf} a favor - ${r.gc} en contra (DG ${r.gf - r.gc >= 0 ? "+" : ""}${r.gf - r.gc})</span><br>
+      <span>Puntos ganados/perdidos: <span class="${claseTotal}">${signoTotal}${r.ptsTotal.toFixed(1)} pts</span></span>
+    `;
+    contenedor.appendChild(resumen);
+
+    if(lista.length === 0){
+      const vacio = document.createElement("div");
+      vacio.className = "sub";
+      vacio.textContent = `${filtro} aún no tiene partidos en el historial.`;
+      contenedor.appendChild(vacio);
+      return;
+    }
+  }
+
+  lista.forEach(partido=>{
+    const div = document.createElement("div");
+    div.className = "historial-item";
+
+    const claseLocal = partido.cambioLocal > 0 ? "positivo" : partido.cambioLocal < 0 ? "negativo" : "neutro";
+    const claseVisita = partido.cambioVisita > 0 ? "positivo" : partido.cambioVisita < 0 ? "negativo" : "neutro";
+
+    const signoLocal = partido.cambioLocal > 0 ? "+" : "";
+    const signoVisita = partido.cambioVisita > 0 ? "+" : "";
+
+    div.innerHTML = `
+      <div class="partido-linea">
+        ${crearImgPaisHTML(partido.local)}
+        <strong>${partido.local}</strong>
+        <strong>${partido.golesLocal} - ${partido.golesVisita}</strong>
+        ${crearImgPaisHTML(partido.visita)}
+        <strong>${partido.visita}</strong>
+      </div>
+      <span class="sub">${partido.fecha} | ${partido.torneo}${partido.modoTexto ? " | " + partido.modoTexto : ""}</span><br>
+      <span>${partido.local}: <span class="${claseLocal}">${signoLocal}${partido.cambioLocal.toFixed(1)} pts</span></span><br>
+      <span>${partido.visita}: <span class="${claseVisita}">${signoVisita}${partido.cambioVisita.toFixed(1)} pts</span></span>
+    `;
+    contenedor.appendChild(div);
+  });
+}
+
+function calcularCambioBase(puntosA,puntosB,resultadoA,I){
+  const dr = puntosA - puntosB;
+  const We = 1 / (Math.pow(10,(-dr/600)) + 1);
+  return I * (resultadoA - We);
+}
+
+function obtenerMultiplicadorGoles(diferencia){
+  if(diferencia <= 1) return 1;
+  if(diferencia === 2) return 1.5;
+  return 1.75 + ((diferencia - 3) / 8);
+}
+
+function formatearCambio(valor){
+  if(valor > 0) return `<span class="positivo">+${valor.toFixed(1)}</span>`;
+  if(valor < 0) return `<span class="negativo">${valor.toFixed(1)}</span>`;
+  return `<span class="neutro">${valor.toFixed(1)}</span>`;
+}
+
+function mostrarUltimoResultado(local,visita,golesLocal,golesVisita,cambioLocal,cambioVisita,modo,torneoTexto=""){
+  const caja = document.getElementById("ultimoResultado");
+  const tipoTexto = torneoTexto || document.getElementById("tipoPartido").selectedOptions[0].text;
+
+  let extra = "";
+  if(modo === "penales_local") extra = " (ganó local en penales)";
+  if(modo === "penales_visita") extra = " (ganó visitante en penales)";
+
+  caja.innerHTML = `
+    <div class="partido-linea">
+      ${crearImgPaisHTML(local,"img-mediana")}
+      <strong>${local}</strong>
+      <strong>${golesLocal} - ${golesVisita}</strong>
+      ${crearImgPaisHTML(visita,"img-mediana")}
+      <strong>${visita}</strong>
+    </div>
+    <span class="sub">${tipoTexto}${extra}</span><br><br>
+    <strong>${local}</strong>: ${formatearCambio(cambioLocal)} pts<br>
+    <strong>${visita}</strong>: ${formatearCambio(cambioVisita)} pts
+  `;
+}
+
+function obtenerFechaActual(){
+  return new Date().toLocaleString("es-MX");
+}
+
+function aplicarPartido(localKey, visitaKey, golesLocal, golesVisita, tipo, modo="normal", torneoTexto=null){
+  let Wlocal = 0;
+  let Wvisita = 0;
+  let modoTexto = "";
+
+  if(modo === "penales_local" || modo === "penales_visita"){
+    if(golesLocal !== golesVisita){
+      return null;
+    }
+    if(modo === "penales_local"){
+      Wlocal = 0.75;
+      Wvisita = 0.5;
+      modoTexto = "Ganó local en penales";
+    }else{
+      Wlocal = 0.5;
+      Wvisita = 0.75;
+      modoTexto = "Ganó visitante en penales";
+    }
+  }else{
+    if(golesLocal > golesVisita){
+      Wlocal = 1;
+      Wvisita = 0;
+      modoTexto = "Ganó local";
+    }else if(golesLocal < golesVisita){
+      Wlocal = 0;
+      Wvisita = 1;
+      modoTexto = "Ganó visitante";
+    }else{
+      Wlocal = 0.5;
+      Wvisita = 0.5;
+      modoTexto = "Empate";
+    }
+  }
+
+  const I = importanciaPartido[tipo] ?? 10;
+  const ptsLocalAntes = puntos[localKey] || 0;
+  const ptsVisitaAntes = puntos[visitaKey] || 0;
+
+  const cambioBaseLocal = calcularCambioBase(ptsLocalAntes, ptsVisitaAntes, Wlocal, I);
+  const cambioBaseVisita = calcularCambioBase(ptsVisitaAntes, ptsLocalAntes, Wvisita, I);
+
+  const diferencia = Math.abs(golesLocal - golesVisita);
+  const multiplicador = obtenerMultiplicadorGoles(diferencia);
+
+  const cambioLocal = parseFloat((cambioBaseLocal * multiplicador).toFixed(1));
+  const cambioVisita = parseFloat((cambioBaseVisita * multiplicador).toFixed(1));
+
+  puntos[localKey] = Math.max(0, parseFloat((ptsLocalAntes + cambioLocal).toFixed(1)));
+  puntos[visitaKey] = Math.max(0, parseFloat((ptsVisitaAntes + cambioVisita).toFixed(1)));
+
+  const partidoGuardado = {
+    fecha: obtenerFechaActual(),
+    local: localKey,
+    visita: visitaKey,
+    golesLocal,
+    golesVisita,
+    torneo: torneoTexto || tipo,
+    modo,
+    modoTexto,
+    cambioLocal,
+    cambioVisita
+  };
+
+  historial.push(partidoGuardado);
+  guardarPuntos();
+  guardarHistorial();
+  renderRanking();
+  renderHistorial();
+  return partidoGuardado;
+}
+
+function procesarPartido(modo="normal"){
+  const localTexto = document.getElementById("nombreLocal").value;
+  const visitaTexto = document.getElementById("nombreVisita").value;
+
+  const localKey = mapaPaises[normalizarEntrada(localTexto)];
+  const visitaKey = mapaPaises[normalizarEntrada(visitaTexto)];
+
+  if(!localKey){
+    alert("Escribe bien el país local y selecciónalo del desplegable.");
+    return;
+  }
+  if(!visitaKey){
+    alert("Escribe bien el país visitante y selecciónalo del desplegable.");
+    return;
+  }
+  if(localKey === visitaKey){
+    alert("No puedes enfrentar el mismo país contra sí mismo.");
+    return;
+  }
+
+  const golesLocal = parseInt(document.getElementById("golesLocal").value,10);
+  const golesVisita = parseInt(document.getElementById("golesVisita").value,10);
+
+  if(isNaN(golesLocal) || isNaN(golesVisita) || golesLocal < 0 || golesVisita < 0){
+    alert("Ingresa un marcador válido.");
+    return;
+  }
+
+  const tipo = document.getElementById("tipoPartido").value;
+  const torneoTexto = document.getElementById("tipoPartido").selectedOptions[0].text;
+
+  const partido = aplicarPartido(localKey, visitaKey, golesLocal, golesVisita, tipo, modo, torneoTexto);
+  if(!partido){
+    alert("Para usar penales, el marcador debe terminar empatado.");
+    return;
+  }
+
+  mostrarUltimoResultado(localKey,visitaKey,golesLocal,golesVisita,partido.cambioLocal,partido.cambioVisita,modo,torneoTexto);
+
+  document.getElementById("nombreLocal").value = "";
+  document.getElementById("nombreVisita").value = "";
+  document.getElementById("golesLocal").value = "";
+  document.getElementById("golesVisita").value = "";
+}
+
+function simularMarcador(local, visita){
+  const pLocal = puntos[local] || 0;
+  const pVisita = puntos[visita] || 0;
+  const diff = pLocal - pVisita;
+
+  let baseLocal = 1 + (diff > 150 ? 1 : diff > 50 ? 0.5 : 0);
+  let baseVisita = 1 + (diff < -150 ? 1 : diff < -50 ? 0.5 : 0);
+
+  let golesLocal = Math.max(0, Math.floor(Math.random()*3 + Math.random()*baseLocal));
+  let golesVisita = Math.max(0, Math.floor(Math.random()*3 + Math.random()*baseVisita));
+
+  return [golesLocal, golesVisita];
+}
+
+function simularPartidoAutomatico(){
+  const localTexto = document.getElementById("nombreLocal").value;
+  const visitaTexto = document.getElementById("nombreVisita").value;
+
+  const localKey = mapaPaises[normalizarEntrada(localTexto)];
+  const visitaKey = mapaPaises[normalizarEntrada(visitaTexto)];
+
+  if(!localKey || !visitaKey || localKey === visitaKey){
+    alert("Selecciona dos selecciones válidas.");
+    return;
+  }
+
+  const [golesLocal, golesVisita] = simularMarcador(localKey, visitaKey);
+  document.getElementById("golesLocal").value = golesLocal;
+  document.getElementById("golesVisita").value = golesVisita;
+  procesarPartido("normal");
+}
+
+function reiniciarPuntos(){
+  paises.forEach(p=>{
+    puntos[p] = 0.0;
+  });
+  guardarPuntos();
+  renderRanking();
+  document.getElementById("ultimoResultado").innerHTML = "Aún no hay partidos jugados.";
+}
+
+function borrarHistorial(){
+  historial = [];
+  guardarHistorial();
+  renderHistorial();
+}
+
+const tiposNacionales = ["Copa Oro","Copa América","Eurocopa","Copa Asiática","Copa Africana","Copa Oceanía","Nations League","Personalizado"];
+
+function guardarTorneosGuardados(){
+  localStorage.setItem(STORAGE_TORNEOS, JSON.stringify(torneosGuardados));
+}
+
+function cargarTorneosGuardados(){
+  const data = localStorage.getItem(STORAGE_TORNEOS);
+  if(data){
+    try{ torneosGuardados = JSON.parse(data) || []; }
+    catch(e){ torneosGuardados = []; }
+  }
+  if(torneosGuardados.length === 0 && torneoActual){
+    torneoActual.id = torneoActual.id || crearIdTorneo();
+    torneosGuardados.push(torneoActual);
+    guardarTorneosGuardados();
+  }
+}
+
+function guardarTorneo(){
+  if(!torneoActual){
+    localStorage.setItem(STORAGE_TORNEO, JSON.stringify(null));
+    guardarTorneosGuardados();
+    return;
+  }
+  torneoActual.id = torneoActual.id || crearIdTorneo();
+  const index = torneosGuardados.findIndex(t => t.id === torneoActual.id);
+  if(index >= 0) torneosGuardados[index] = torneoActual;
+  else torneosGuardados.unshift(torneoActual);
+  localStorage.setItem(STORAGE_TORNEO, JSON.stringify(torneoActual));
+  guardarTorneosGuardados();
+}
+
+function cargarTorneo(){
+  const data = localStorage.getItem(STORAGE_TORNEO);
+  if(!data) return;
+  try{ torneoActual = JSON.parse(data) || null; }
+  catch(e){ torneoActual = null; }
+}
+
+function crearIdTorneo(){
+  return "torneo_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+}
+
+function nombreTipoTorneo(tipo, subtipo=""){
+  if(tipo === "mundial") return "Copa del Mundo";
+  if(tipo === "confederaciones") return "Copa Confederaciones";
+  if(tipo === "nacional") return subtipo || "La Nacional";
+  return "Torneo";
+}
+
+function iniciarConfigTorneo(tipo){
+  torneoActual = null;
+  torneoConfigTemporal = {
+    tipo,
+    subtipo: tipo === "nacional" ? "Copa Oro" : "",
+    nombre: "",
+    gruposCount: 4,
+    porGrupo: 4,
+    armado: "sorteo",
+    equipos: [],
+    asignaciones: {}
+  };
+  renderConfigTorneo();
+}
+
+function mostrarCopasGuardadas(){
+  torneoActual = null;
+  torneoConfigTemporal = null;
+  localStorage.setItem(STORAGE_TORNEO, JSON.stringify(null));
+  renderTorneo();
+}
+
+function actualizarConfigDesdeFormulario(){
+  if(!torneoConfigTemporal) return;
+  const nombre = document.getElementById("configNombreTorneo");
+  const subtipo = document.getElementById("configSubtipoTorneo");
+  const grupos = document.getElementById("configGruposTorneo");
+  const porGrupo = document.getElementById("configPorGrupoTorneo");
+  const armado = document.getElementById("configModoGrupos");
+  if(nombre) torneoConfigTemporal.nombre = nombre.value.trim();
+  if(subtipo) torneoConfigTemporal.subtipo = subtipo.value;
+  if(grupos) torneoConfigTemporal.gruposCount = Math.max(1, parseInt(grupos.value,10) || 4);
+  if(porGrupo) torneoConfigTemporal.porGrupo = Math.max(2, parseInt(porGrupo.value,10) || 4);
+  if(armado) torneoConfigTemporal.armado = armado.value;
+}
+
+function letraGrupo(index){ return String.fromCharCode(65 + index); }
+
+function asegurarAsignacionesManual(){
+  if(!torneoConfigTemporal || !torneoConfigTemporal.asignaciones) return;
+  const gruposCount = torneoConfigTemporal.gruposCount || 4;
+  const porGrupo = torneoConfigTemporal.porGrupo || 4;
+  Object.keys(torneoConfigTemporal.asignaciones).forEach(clave=>{
+    const [g,p] = clave.split("_").map(n=>parseInt(n,10));
+    if(isNaN(g) || isNaN(p) || g >= gruposCount || p >= porGrupo){
+      delete torneoConfigTemporal.asignaciones[clave];
+    }
+  });
+}
+
+function obtenerPaisEnSlot(grupo, posicion){
+  if(!torneoConfigTemporal || !torneoConfigTemporal.asignaciones) return "";
+  return torneoConfigTemporal.asignaciones[`${grupo}_${posicion}`] || "";
+}
+
+function renderTablaManual(gruposCount, porGrupo){
+  // Países ya colocados en algún slot (para no repetirlos en las demás listas)
+  const usados = new Set(
+    Object.values(torneoConfigTemporal.asignaciones || {})
+      .map(v => (v || "").trim())
+      .filter(Boolean)
+  );
+
+  const grupos = Array.from({length:gruposCount},(_,g)=>{
+    const slots = Array.from({length:porGrupo},(_,p)=>{
+      const actual = obtenerPaisEnSlot(g,p);
+      // Cada slot tiene su propia lista: las selecciones aún disponibles
+      // más la que ya tiene asignada (para que siga siendo válida).
+      const opciones = torneoConfigTemporal.equipos
+        .filter(eq => !usados.has(eq) || eq === actual)
+        .map(eq => `<option value="${eq}"></option>`)
+        .join("");
+      return `
+      <div class="manual-slot">
+        <span>#${p+1}</span>
+        <input list="listaManual_${g}_${p}" type="text" id="manualSlot_${g}_${p}" value="${actual}" placeholder="Seleccionar país" onchange="actualizarSlotManual(${g},${p})">
+        <datalist id="listaManual_${g}_${p}">${opciones}</datalist>
+      </div>
+    `;
+    }).join("");
+    return `<div class="grupo-box"><strong>Grupo ${letraGrupo(g)}</strong>${slots}</div>`;
+  }).join("");
+
+  const chips = torneoConfigTemporal.equipos.map((eq,i)=>`
+    <span class="equipo-chip">${crearImgPaisHTML(eq)} ${eq}<button onclick="quitarEquipoConfig(${i})">x</button></span>
+  `).join("");
+
+  return `
+    <div class="copa-card">
+      <strong>Armar grupos manualmente</strong><br>
+      <span class="sub">Llena cada lugar de la tabla. Si pones a México en Grupo A #1, se queda exactamente ahí al guardar.</span>
+      <div class="manual-layout">
+        <div class="manual-grupos">${grupos}</div>
+        <div class="selecciones-lado">
+          <strong>Selecciones agregadas</strong><br>
+          ${chips || `<span class="sub">Agrega selecciones para usarlas en la tabla.</span>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderConfigTorneo(){
+  const cont = document.getElementById("torneoVista");
+  if(!torneoConfigTemporal){ renderTorneo(); return; }
+  const tipo = torneoConfigTemporal.tipo;
+  const subtipo = torneoConfigTemporal.subtipo || "";
+  const nombreBase = nombreTipoTorneo(tipo, subtipo);
+  const nombreValor = torneoConfigTemporal.nombre || nombreBase;
+  const gruposCount = torneoConfigTemporal.gruposCount || 4;
+  const porGrupo = torneoConfigTemporal.porGrupo || 4;
+  const armado = torneoConfigTemporal.armado || "sorteo";
+  const nacionales = tiposNacionales.map(op => `<option value="${op}" ${op===subtipo ? "selected" : ""}>${op}</option>`).join("");
+  asegurarAsignacionesManual();
+
+  const equipos = torneoConfigTemporal.equipos.map((eq,i)=>`
+    <span class="equipo-chip">${crearImgPaisHTML(eq)} ${eq}<button onclick="quitarEquipoConfig(${i})">x</button></span>
+  `).join("");
+
+  const manual = armado === "manual" ? renderTablaManual(gruposCount, porGrupo) : "";
+
+  cont.innerHTML = `
+    <div class="vista-titulo">
+      <h3>Configurar ${nombreBase}</h3>
+      <button onclick="mostrarCopasGuardadas()">Volver</button>
+    </div>
+    <div class="copa-card">
+      <div class="fila-torneo">
+        <input type="text" id="configNombreTorneo" placeholder="Nombre del torneo" value="${nombreValor}">
+        ${tipo === "nacional" ? `<select id="configSubtipoTorneo" onchange="cambiarSubtipoNacional()">${nacionales}</select>` : ""}
+        <input type="number" id="configGruposTorneo" min="1" value="${gruposCount}" placeholder="N° grupos" onchange="cambiarEstructuraConfig()">
+        <input type="number" id="configPorGrupoTorneo" min="2" value="${porGrupo}" placeholder="Equipos por grupo" onchange="cambiarEstructuraConfig()">
+        <select id="configModoGrupos" onchange="cambiarModoGrupos()">
+          <option value="sorteo" ${armado === "sorteo" ? "selected" : ""}>Sortear grupos</option>
+          <option value="manual" ${armado === "manual" ? "selected" : ""}>Yo armo los grupos</option>
+        </select>
+      </div>
+      <div class="fila-torneo">
+        <input list="listaPaisesSeleccionados" type="text" id="configPaisAgregar" placeholder="Agregar selección">
+        <button onclick="agregarEquipoConfig()">Agregar selección</button>
+        <button onclick="limpiarEquiposConfig()">Limpiar selecciones</button>
+      </div>
+      ${armado === "manual" ? `<span class="sub">Agrega las selecciones y luego colócalas en la tabla de grupos.</span>` : `<div>${equipos || `<span class="sub">Aún no hay selecciones agregadas.</span>`}</div>`}
+      <div class="botones-resultado"><button onclick="guardarConfigYCriarGrupos()">Guardar y crear grupos</button></div>
+    </div>
+    ${manual}`;
+}
+
+function cambiarSubtipoNacional(){
+  if(!torneoConfigTemporal) return;
+  actualizarTodasAsignacionesManual();
+  actualizarConfigDesdeFormulario();
+  if(!torneoConfigTemporal.nombre || tiposNacionales.includes(torneoConfigTemporal.nombre)) torneoConfigTemporal.nombre = torneoConfigTemporal.subtipo;
+  renderConfigTorneo();
+}
+
+function cambiarEstructuraConfig(){ actualizarTodasAsignacionesManual(); actualizarConfigDesdeFormulario(); asegurarAsignacionesManual(); renderConfigTorneo(); }
+function cambiarModoGrupos(){ actualizarTodasAsignacionesManual(); actualizarConfigDesdeFormulario(); asegurarAsignacionesManual(); renderConfigTorneo(); }
+
+function actualizarSlotManual(grupo, posicion){
+  if(!torneoConfigTemporal) return;
+  const input = document.getElementById(`manualSlot_${grupo}_${posicion}`);
+  if(!input) return;
+  torneoConfigTemporal.asignaciones[`${grupo}_${posicion}`] = input.value.trim();
+  // Re-render para que el país elegido desaparezca de las listas de los demás slots
+  renderConfigTorneo();
+}
+
+function agregarEquipoConfig(){
+  if(!torneoConfigTemporal) return;
+  actualizarTodasAsignacionesManual();
+  actualizarConfigDesdeFormulario();
+  const valor = document.getElementById("configPaisAgregar").value;
+  const pais = mapaPaises[normalizarEntrada(valor)];
+  if(!pais){ alert("Selecciona una selección válida."); return; }
+  if(torneoConfigTemporal.equipos.includes(pais)){ alert("Esa selección ya está en el torneo."); return; }
+  torneoConfigTemporal.equipos.push(pais);
+  renderConfigTorneo();
+}
+
+function quitarEquipoConfig(index){
+  if(!torneoConfigTemporal) return;
+  actualizarTodasAsignacionesManual();
+  actualizarConfigDesdeFormulario();
+  const quitado = torneoConfigTemporal.equipos.splice(index,1)[0];
+  if(quitado){
+    Object.keys(torneoConfigTemporal.asignaciones).forEach(clave=>{
+      if(torneoConfigTemporal.asignaciones[clave] === quitado) delete torneoConfigTemporal.asignaciones[clave];
+    });
+  }
+  renderConfigTorneo();
+}
+
+function limpiarEquiposConfig(){
+  if(!torneoConfigTemporal) return;
+  actualizarConfigDesdeFormulario();
+  torneoConfigTemporal.equipos = [];
+  torneoConfigTemporal.asignaciones = {};
+  renderConfigTorneo();
+}
+
+function crearGruposDesdeEquipos(equiposPorGrupo){
+  torneoActual.grupos = [];
+  torneoActual.clasificados = [];
+  torneoActual.campeon = null;
+  equiposPorGrupo.forEach((grupoEquipos, i)=>{
+    torneoActual.grupos.push({nombre: letraGrupo(i), equipos: grupoEquipos, tabla: crearTablaGrupo(grupoEquipos), partidos: crearPartidosGrupo(grupoEquipos)});
+  });
+}
+
+function actualizarTodasAsignacionesManual(){
+  if(!torneoConfigTemporal || torneoConfigTemporal.armado !== "manual") return;
+  const gruposCount = torneoConfigTemporal.gruposCount || 4;
+  const porGrupo = torneoConfigTemporal.porGrupo || 4;
+  for(let g=0; g<gruposCount; g++){
+    for(let p=0; p<porGrupo; p++){
+      const input = document.getElementById(`manualSlot_${g}_${p}`);
+      if(input) torneoConfigTemporal.asignaciones[`${g}_${p}`] = input.value.trim();
+    }
+  }
+}
+
+function crearGruposManual(){
+  const gruposCount = torneoConfigTemporal.gruposCount || 4;
+  const porGrupo = torneoConfigTemporal.porGrupo || 4;
+  const grupos = Array.from({length:gruposCount},()=>[]);
+  const usados = new Set();
+
+  for(let g=0; g<gruposCount; g++){
+    for(let p=0; p<porGrupo; p++){
+      const texto = (torneoConfigTemporal.asignaciones[`${g}_${p}`] || "").trim();
+      const pais = mapaPaises[normalizarEntrada(texto)];
+      if(!pais){ alert(`Falta una selección válida en el Grupo ${letraGrupo(g)}, posición ${p+1}.`); return false; }
+      if(!torneoConfigTemporal.equipos.includes(pais)){ alert(`${pais} no está en las selecciones agregadas.`); return false; }
+      if(usados.has(pais)){ alert(`${pais} está repetido en la tabla.`); return false; }
+      usados.add(pais);
+      grupos[g][p] = pais;
+    }
+  }
+
+  crearGruposDesdeEquipos(grupos);
+  torneoActual.equipos = grupos.flat();
+  return true;
+}
+
+function guardarConfigYCriarGrupos(){
+  if(!torneoConfigTemporal) return;
+  actualizarTodasAsignacionesManual();
+  actualizarConfigDesdeFormulario();
+  asegurarAsignacionesManual();
+  const nombre = torneoConfigTemporal.nombre || nombreTipoTorneo(torneoConfigTemporal.tipo, torneoConfigTemporal.subtipo);
+  const gruposCount = torneoConfigTemporal.gruposCount || 4;
+  const porGrupo = torneoConfigTemporal.porGrupo || 4;
+  const totalNecesario = gruposCount * porGrupo;
+  if(torneoConfigTemporal.equipos.length < totalNecesario){ alert(`Faltan selecciones. Necesitas ${totalNecesario} y tienes ${torneoConfigTemporal.equipos.length}.`); return; }
+  if(torneoConfigTemporal.armado === "manual" && torneoConfigTemporal.equipos.length !== totalNecesario){ alert(`Para armar grupos manuales necesitas exactamente ${totalNecesario} selecciones.`); return; }
+  torneoActual = {
+    id: crearIdTorneo(), nombre, tipo: torneoConfigTemporal.tipo, subtipo: torneoConfigTemporal.subtipo || "",
+    gruposCount, porGrupo, equipos: torneoConfigTemporal.equipos.slice(0,totalNecesario), grupos: [], clasificados: [], campeon: null,
+    creado: obtenerFechaActual(), armado: torneoConfigTemporal.armado || "sorteo"
+  };
+  if(torneoConfigTemporal.armado === "manual"){
+    if(!crearGruposManual()) return;
+  }else{
+    sortearGrupos(false);
+  }
+  torneoConfigTemporal = null;
+  guardarTorneo();
+  renderTorneo();
+}
+function crearTorneo(){ iniciarConfigTorneo("mundial"); }
+
+function eliminarTorneo(){
+  if(!torneoActual) return;
+  if(!confirm("¿Eliminar este torneo guardado?")) return;
+  torneosGuardados = torneosGuardados.filter(t => t.id !== torneoActual.id);
+  torneoActual = null;
+  guardarTorneo();
+  renderTorneo();
+}
+
+function abrirTorneoGuardado(id){
+  const torneo = torneosGuardados.find(t => t.id === id);
+  if(!torneo) return;
+  torneoActual = torneo;
+  torneoConfigTemporal = null;
+  localStorage.setItem(STORAGE_TORNEO, JSON.stringify(torneoActual));
+  renderTorneo();
+}
+
+function mezclarArray(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function crearPartidosGrupo(equipos){
+  const partidos = [];
+  for(let i=0;i<equipos.length;i++){
+    for(let j=i+1;j<equipos.length;j++){
+      partidos.push({local:equipos[i], visita:equipos[j], golesLocal:"", golesVisita:"", jugado:false, modo:"normal"});
+    }
+  }
+  return partidos;
+}
+
+function crearTablaGrupo(equipos){
+  const tabla = {};
+  equipos.forEach(eq=>{ tabla[eq] = {pts:0,gf:0,gc:0,dg:0,pj:0,pg:0,pe:0,pp:0}; });
+  return tabla;
+}
+
+function sortearGrupos(render=true){
+  if(!torneoActual){ alert("Primero crea un torneo."); return; }
+  const totalNecesario = torneoActual.gruposCount * torneoActual.porGrupo;
+  if(torneoActual.equipos.length < totalNecesario){ alert("Faltan selecciones para llenar todos los grupos."); return; }
+  const equipos = mezclarArray(torneoActual.equipos.slice(0,totalNecesario));
+  torneoActual.grupos = [];
+  torneoActual.clasificados = [];
+  torneoActual.campeon = null;
+  for(let i=0;i<torneoActual.gruposCount;i++){
+    const nombreGrupo = String.fromCharCode(65+i);
+    const grupoEquipos = equipos.slice(i*torneoActual.porGrupo, (i+1)*torneoActual.porGrupo);
+    torneoActual.grupos.push({nombre:nombreGrupo, equipos:grupoEquipos, tabla:crearTablaGrupo(grupoEquipos), partidos:crearPartidosGrupo(grupoEquipos)});
+  }
+  guardarTorneo();
+  if(render) renderTorneo();
+}
+
+function obtenerTipoGrupoTorneo(){
+  if(!torneoActual) return "amistoso_fecha_fifa";
+  if(torneoActual.tipo === "mundial") return "fase_grupos_mundial";
+  if(torneoActual.tipo === "confederaciones") return "fase_grupos_copa_confederaciones";
+  return "fase_grupos_copa_continental";
+}
+
+function obtenerTipoKO(round){
+  if(torneoActual.tipo === "mundial"){
+    if(round === "final") return "final_mundial";
+    if(round === "semi") return "semis_mundial";
+    if(round === "cuartos") return "cuartos_mundial";
+    return "octavos_mundial";
+  }
+  if(torneoActual.tipo === "confederaciones") return round === "final" ? "final_copa_confederaciones" : "semis_copa_confederaciones";
+  return round === "final" ? "final_copa_continental" : round === "semi" ? "semis_copa_continental" : "cuartos_copa_continental";
+}
+
+function actualizarTabla(grupo, local, visita, gl, gv){
+  const a = grupo.tabla[local];
+  const b = grupo.tabla[visita];
+  if(!a || !b) return;
+  a.pj++; b.pj++;
+  a.gf += gl; a.gc += gv; a.dg = a.gf - a.gc;
+  b.gf += gv; b.gc += gl; b.dg = b.gf - b.gc;
+  if(gl > gv){ a.pts += 3; a.pg++; b.pp++; }
+  else if(gv > gl){ b.pts += 3; b.pg++; a.pp++; }
+  else{ a.pts += 1; b.pts += 1; a.pe++; b.pe++; }
+}
+
+function ordenarGrupo(grupo){
+  return [...grupo.equipos].sort((x,y)=>{
+    const A = grupo.tabla[x]; const B = grupo.tabla[y];
+    if(B.pts !== A.pts) return B.pts - A.pts;
+    if(B.dg !== A.dg) return B.dg - A.dg;
+    if(B.gf !== A.gf) return B.gf - A.gf;
+    // Desempate final: mantener el orden en que se colocaron los equipos
+    // (no alfabético), así México se queda primero si lo pusiste primero.
+    return grupo.equipos.indexOf(x) - grupo.equipos.indexOf(y);
+  });
+}
+
+function actualizarClasificados(){
+  if(!torneoActual || !torneoActual.grupos.length) return;
+  torneoActual.clasificados = [];
+  torneoActual.grupos.forEach(grupo=>{
+    const orden = ordenarGrupo(grupo);
+    if(orden[0]) torneoActual.clasificados.push(orden[0]);
+    if(orden[1]) torneoActual.clasificados.push(orden[1]);
+  });
+}
+
+function guardarResultadoGrupo(grupoIndex, partidoIndex){
+  const grupo = torneoActual.grupos[grupoIndex];
+  const partido = grupo.partidos[partidoIndex];
+  if(!grupo || !partido || partido.jugado) return;
+  const gl = parseInt(document.getElementById(`gl_${grupoIndex}_${partidoIndex}`).value,10);
+  const gv = parseInt(document.getElementById(`gv_${grupoIndex}_${partidoIndex}`).value,10);
+  if(isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0){ alert("Ingresa un marcador válido."); return; }
+  const guardado = aplicarPartido(partido.local, partido.visita, gl, gv, obtenerTipoGrupoTorneo(), "normal", `${torneoActual.nombre} - Grupo ${grupo.nombre}`);
+  if(!guardado) return;
+  partido.golesLocal = gl;
+  partido.golesVisita = gv;
+  partido.jugado = true;
+  actualizarTabla(grupo, partido.local, partido.visita, gl, gv);
+  actualizarClasificados();
+  guardarTorneo();
+  renderTorneo();
+}
+
+function simularFaseGrupos(){
+  if(!torneoActual || !torneoActual.grupos.length){ alert("Primero crea los grupos."); return; }
+  torneoActual.grupos.forEach(grupo=>{
+    if(!grupo.partidos) grupo.partidos = crearPartidosGrupo(grupo.equipos);
+    grupo.partidos.forEach(partido=>{
+      if(partido.jugado) return;
+      const [gl, gv] = simularMarcador(partido.local, partido.visita);
+      aplicarPartido(partido.local, partido.visita, gl, gv, obtenerTipoGrupoTorneo(), "normal", `${torneoActual.nombre} - Grupo ${grupo.nombre}`);
+      partido.golesLocal = gl;
+      partido.golesVisita = gv;
+      partido.jugado = true;
+      actualizarTabla(grupo, partido.local, partido.visita, gl, gv);
+    });
+  });
+  actualizarClasificados();
+  guardarTorneo();
+  renderTorneo();
+}
+
+function simularEliminacion(){
+  if(!torneoActual || torneoActual.clasificados.length < 2){ alert("Primero agrega resultados de la fase de grupos."); return; }
+  let ronda = [...torneoActual.clasificados];
+  while(ronda.length > 1){
+    const siguiente = [];
+    let roundName = "octavos";
+    if(ronda.length === 2) roundName = "final";
+    else if(ronda.length === 4) roundName = "semi";
+    else if(ronda.length === 8) roundName = "cuartos";
+    for(let i=0;i<ronda.length;i+=2){
+      const local = ronda[i]; const visita = ronda[i+1];
+      if(!visita){ siguiente.push(local); continue; }
+      let [gl, gv] = simularMarcador(local, visita);
+      let modo = gl === gv ? (Math.random() < 0.5 ? "penales_local" : "penales_visita") : "normal";
+      aplicarPartido(local, visita, gl, gv, obtenerTipoKO(roundName), modo, `${torneoActual.nombre} - ${roundName}`);
+      siguiente.push(modo === "penales_local" ? local : modo === "penales_visita" ? visita : gl > gv ? local : visita);
+    }
+    ronda = siguiente;
+  }
+  torneoActual.campeon = ronda[0] || null;
+  guardarTorneo();
+  renderTorneo();
+}
+
+function simularTorneoCompleto(){
+  if(!torneoActual){ alert("Primero crea o abre un torneo."); return; }
+  if(!torneoActual.grupos.length) sortearGrupos(false);
+  simularFaseGrupos();
+  simularEliminacion();
+}
+
+
+function guardarCambiosGruposExistentes(){
+  if(!torneoActual || !torneoActual.grupos?.length){
+    alert("No hay un torneo abierto.");
+    return;
+  }
+
+  const usados = new Set();
+  const nuevosGrupos = [];
+
+  for(let gi=0; gi<torneoActual.grupos.length; gi++){
+    const grupo = torneoActual.grupos[gi];
+    const nuevosEquipos = [];
+
+    for(let idx=0; idx<grupo.equipos.length; idx++){
+      const input = document.getElementById(`editGrupo_${gi}_${idx}`);
+      if(!input){
+        alert("No se pudieron leer los cambios.");
+        return;
+      }
+
+      const texto = input.value.trim();
+      const pais = mapaPaises[normalizarEntrada(texto)];
+
+      if(!pais){
+        alert(`Selección inválida en Grupo ${grupo.nombre}, posición ${idx+1}.`);
+        return;
+      }
+      if(usados.has(pais)){
+        alert(`${pais} está repetido en más de un lugar.`);
+        return;
+      }
+
+      usados.add(pais);
+      nuevosEquipos.push(pais);
+    }
+
+    nuevosGrupos.push({
+      nombre: grupo.nombre,
+      equipos: nuevosEquipos,
+      tabla: crearTablaGrupo(nuevosEquipos),
+      partidos: crearPartidosGrupo(nuevosEquipos)
+    });
+  }
+
+  torneoActual.grupos = nuevosGrupos;
+  torneoActual.equipos = nuevosGrupos.flatMap(g => g.equipos);
+  torneoActual.clasificados = [];
+  torneoActual.campeon = null;
+
+  guardarTorneo();
+  renderTorneo();
+  alert("Cambios de grupos guardados.");
+}
+
+
+function renderListaCopas(){
+  const cont = document.getElementById("torneoVista");
+  const lista = torneosGuardados.map(t=>`
+    <div class="copa-card">
+      <div class="vista-titulo">
+        <div><strong>${t.nombre}</strong><br><span class="sub">${nombreTipoTorneo(t.tipo, t.subtipo)} | ${t.equipos?.length || 0} selecciones | ${t.grupos?.length || 0} grupos</span></div>
+        <button onclick="abrirTorneoGuardado('${t.id}')">Abrir</button>
+      </div>
+    </div>`).join("");
+  cont.innerHTML = `<div class="vista-titulo"><h3>Copas guardadas</h3></div>${lista || `<div class="sub">Aún no hay copas guardadas. Elige Copa del Mundo, Confederaciones o La Nacional para crear una.</div>`}`;
+}
+
+function renderTorneo(){
+  const cont = document.getElementById("torneoVista");
+  if(torneoConfigTemporal){ renderConfigTorneo(); return; }
+  if(!torneoActual){ renderListaCopas(); return; }
+  torneoActual.grupos.forEach(grupo=>{
+    if(!grupo.partidos) grupo.partidos = crearPartidosGrupo(grupo.equipos);
+    if(!grupo.tabla) grupo.tabla = crearTablaGrupo(grupo.equipos);
+  });
+  // Solo los equipos del torneo activo en el datalist de grupos
+  const equiposTorneo = torneoActual.equipos || [];
+  actualizarListaTorneo(equiposTorneo);
+  let html = `
+    <div class="vista-titulo">
+      <div><h3>${torneoActual.nombre}</h3><span class="sub">${nombreTipoTorneo(torneoActual.tipo, torneoActual.subtipo)} | ${torneoActual.equipos.length} selecciones | ${torneoActual.gruposCount} grupos</span></div>
+      <div class="botones-resultado"><button onclick="mostrarCopasGuardadas()">Copas guardadas</button><button onclick="guardarTorneo()">Guardar</button><button onclick="eliminarTorneo()">Eliminar</button></div>
+    </div>
+    <div class="botones-resultado"><button onclick="sortearGrupos()">Volver a sortear grupos</button><button onclick="guardarCambiosGruposExistentes()">Guardar cambios de grupos</button><button onclick="simularFaseGrupos()">Simular fase de grupos</button><button onclick="simularEliminacion()">Simular eliminación</button><button onclick="simularTorneoCompleto()">Simular torneo completo</button></div>`;
+  if(torneoActual.grupos.length){
+    torneoActual.grupos.forEach((grupo, gi)=>{
+      const orden = ordenarGrupo(grupo);
+      html += `<div class="grupo-box"><strong>Grupo ${grupo.nombre}</strong><table class="tabla-grupo"><thead><tr><th>Selección</th><th>Pts</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th></tr></thead><tbody>`;
+      orden.forEach((eq,idx)=>{
+        const t = grupo.tabla[eq];
+        html += `<tr><td><div style="display:flex; gap:6px; align-items:center;">
+  ${crearImgPaisHTML(eq)}
+  <input list="listaPaisesTorneo" id="editGrupo_${gi}_${idx}" value="${eq}" placeholder="Selección" style="flex:1; min-width:120px;">
+  <select onchange="if(this.value){document.getElementById('editGrupo_${gi}_${idx}').value=this.value;}" style="max-width:170px;">
+    <option value="">Elegir</option>
+    ${equiposTorneo.map(p=>`<option value="${p}" ${p===eq?'selected':''}>${p}</option>`).join("")}
+  </select>
+</div></td><td>${t.pts}</td><td>${t.pj}</td><td>${t.pg}</td><td>${t.pe}</td><td>${t.pp}</td><td>${t.gf}</td><td>${t.gc}</td><td>${t.dg}</td></tr>`;
+      });
+      html += `</tbody></table><div class="copa-card"><strong>Partidos del grupo ${grupo.nombre}</strong>`;
+      grupo.partidos.forEach((partido, pi)=>{
+        html += `<div class="partido-editor">${crearImgPaisHTML(partido.local)} <strong>${partido.local}</strong><input type="number" id="gl_${gi}_${pi}" min="0" value="${partido.golesLocal}" ${partido.jugado ? "disabled" : ""}><span>-</span><input type="number" id="gv_${gi}_${pi}" min="0" value="${partido.golesVisita}" ${partido.jugado ? "disabled" : ""}>${crearImgPaisHTML(partido.visita)} <strong>${partido.visita}</strong>${partido.jugado ? `<span class="positivo">Guardado</span>` : `<button onclick="guardarResultadoGrupo(${gi},${pi})">Guardar resultado</button>`}</div>`;
+      });
+      html += `</div></div>`;
+    });
+  }
+  if(torneoActual.clasificados && torneoActual.clasificados.length){ html += `<div class="torneo-item"><strong>Clasificados a eliminación:</strong><br>${torneoActual.clasificados.join(", ")}</div>`; }
+  if(torneoActual.campeon){ html += `<div class="torneo-item"><strong>🏆 Campeón:</strong> ${torneoActual.campeon}</div>`; }
+  cont.innerHTML = html;
+}
+document.getElementById("urlImagenNuevoPais").addEventListener("input", manejarURLNuevoPais);
+document.getElementById("imagenNuevoPais").addEventListener("change", manejarArchivoNuevoPais);
+
+cargarPaises();
+cargarPuntosGuardados();
+cargarHistorial();
+cargarImagenesPaises();
+cargarTorneo();
+cargarTorneosGuardados();
+cargarListaPaises();
+renderRanking();
+renderHistorial();
+renderTorneo();
+mostrarPreviewNuevoPais("");
+</script>
+
+</body>
+</html>
