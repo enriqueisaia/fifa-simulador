@@ -1,0 +1,14 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "FIFA Simulador PRO",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "FIFA PRO",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "fifa-simulador-pro",
+  "description": "Simulador de torneos de fútbol con fase de grupos, eliminatorias y estadísticas.",
+  "lang": "en"
+}
