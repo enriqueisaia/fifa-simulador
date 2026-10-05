@@ -274,8 +274,8 @@
     const auth     = getAuth(app);
     const provider = new GoogleAuthProvider();
     const db       = getDatabase(app);
-
     async function probarFirebase() {
+
   try {
     const pruebaRef = ref(db, "prueba");
     await set(pruebaRef, {
@@ -287,10 +287,11 @@
     console.error("Error al conectar con Realtime Database:", error);
   }
 }
-    probarFirebase();
+
     // Escucha el estado de autenticación
     onAuthStateChanged(auth, user => {
       if(user){
+      probarFirebase();
         // Usuario autenticado → ocultar overlay, mostrar app
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("userBar").style.display      = "flex";
