@@ -275,6 +275,19 @@
     const provider = new GoogleAuthProvider();
     const db       = getDatabase(app);
 
+    async function probarFirebase() {
+  try {
+    const pruebaRef = ref(db, "prueba");
+    await set(pruebaRef, {
+      conectado: true,
+      fecha: new Date().toISOString()
+    });
+    console.log("Firebase Realtime Database conectado correctamente");
+  } catch (error) {
+    console.error("Error al conectar con Realtime Database:", error);
+  }
+}
+    probarFirebase();
     // Escucha el estado de autenticación
     onAuthStateChanged(auth, user => {
       if(user){
