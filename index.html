@@ -276,22 +276,26 @@
     const db       = getDatabase(app);
     async function probarFirebase() {
 
-  try {
-    const pruebaRef = ref(db, "prueba");
+        try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+      console.log("Usuario no ha iniciado sesión todavía");
+      return;
+    }
+
+    const pruebaRef = ref(db, "usuarios/" + usuario.uid + "/prueba");
+
     await set(pruebaRef, {
       conectado: true,
       fecha: new Date().toISOString()
     });
+
     console.log("Firebase Realtime Database conectado correctamente");
   } catch (error) {
     console.error("Error al conectar con Realtime Database:", error);
   }
 }
-
-    // Escucha el estado de autenticación
-    onAuthStateChanged(auth, user => {
-      if(user){
-      probarFirebase();
         // Usuario autenticado → ocultar overlay, mostrar app
         document.getElementById("loginOverlay").style.display = "none";
         document.getElementById("userBar").style.display      = "flex";
