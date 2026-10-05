@@ -251,6 +251,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut }
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, get, set }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     // ── CONFIGURA AQUÍ TU PROYECTO FIREBASE ──────────────────────────────
     // 1. Ve a https://console.firebase.google.com
@@ -271,6 +273,7 @@
     const app      = initializeApp(firebaseConfig);
     const auth     = getAuth(app);
     const provider = new GoogleAuthProvider();
+    const db       = getDatabase(app);
 
     // Escucha el estado de autenticación
     onAuthStateChanged(auth, user => {
