@@ -274,9 +274,8 @@
     const auth     = getAuth(app);
     const provider = new GoogleAuthProvider();
     const db       = getDatabase(app);
-    async function probarFirebase() {
-
-        try {
+async function probarFirebase() {
+  try {
     const usuario = auth.currentUser;
 
     if (!usuario) {
@@ -296,19 +295,24 @@
     console.error("Error al conectar con Realtime Database:", error);
   }
 }
-        // Usuario autenticado → ocultar overlay, mostrar app
-        document.getElementById("loginOverlay").style.display = "none";
-        document.getElementById("userBar").style.display      = "flex";
-        document.getElementById("userName").textContent        = user.displayName || user.email;
-        document.getElementById("userPhoto").src               = user.photoURL || "";
-        document.getElementById("userPhoto").style.display     = user.photoURL ? "block" : "none";
-      } else {
-        // No autenticado → mostrar overlay
-        document.getElementById("loginOverlay").style.display = "flex";
-        document.getElementById("userBar").style.display      = "none";
-      }
-    });
 
+// Escucha el estado de autenticación
+onAuthStateChanged(auth, user => {
+  if(user){
+    probarFirebase();
+
+    // Usuario autenticado → ocultar overlay, mostrar app
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("userBar").style.display = "flex";
+    document.getElementById("userName").textContent = user.displayName || user.email;
+    document.getElementById("userPhoto").src = user.photoURL || "";
+    document.getElementById("userPhoto").style.display = user.photoURL ? "block" : "none";
+  } else {
+    // No autenticado → mostrar overlay
+    document.getElementById("loginOverlay").style.display = "flex";
+    document.getElementById("userBar").style.display = "none";
+  }
+});
     // Botón Google
     document.getElementById("btnGoogle").addEventListener("click", async () => {
       const btn = document.getElementById("btnGoogle");
