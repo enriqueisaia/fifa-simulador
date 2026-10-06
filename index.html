@@ -813,7 +813,7 @@ function agregarNuevoPais(){
   alert("Selección agregada correctamente.");
 }
 
-async function guardarPuntos(){
+  async function guardarPuntos(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(puntos));
 
   try {
@@ -821,9 +821,16 @@ async function guardarPuntos(){
 
     if (!usuario) return;
 
+    const puntosFirebase = {};
+
+    Object.keys(puntos).forEach(pais => {
+      const claveSegura = pais.replace(/\./g, "_PUNTO_");
+      puntosFirebase[claveSegura] = puntos[pais];
+    });
+
     const puntosRef = ref(db, "usuarios/" + usuario.uid + "/puntosRanking");
 
-    await set(puntosRef, puntos);
+    await set(puntosRef, puntosFirebase);
 
     console.log("Puntos sincronizados con Firebase");
   } catch (error) {
