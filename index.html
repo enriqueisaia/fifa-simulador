@@ -837,7 +837,8 @@ function agregarNuevoPais(){
     console.error("No se pudieron sincronizar los puntos:", error);
   }
 }
-async function cargarPuntosFirebase(){
+
+  async function cargarPuntosFirebase(){
   try {
     const usuario = auth.currentUser;
 
@@ -847,7 +848,12 @@ async function cargarPuntosFirebase(){
     const snapshot = await get(puntosRef);
 
     if (snapshot.exists()) {
-      puntos = snapshot.val();
+      const puntosFirebase = snapshot.val();
+
+      Object.keys(puntosFirebase).forEach(clave => {
+        const pais = clave.replace(/_PUNTO_/g, ".");
+        puntos[pais] = puntosFirebase[clave];
+      });
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(puntos));
 
