@@ -300,6 +300,7 @@ async function probarFirebase() {
 onAuthStateChanged(auth, user => {
   if(user){
     probarFirebase();
+    cargarPuntosFirebase();
 
     // Usuario autenticado → ocultar overlay, mostrar app
     document.getElementById("loginOverlay").style.display = "none";
@@ -807,10 +808,48 @@ function agregarNuevoPais(){
   alert("Selección agregada correctamente.");
 }
 
-function guardarPuntos(){
+async function guardarPuntos(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(puntos));
-}
 
+  try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) return;
+
+    const puntosRef = ref(db, "usuarios/" + usuario.uid + "/puntosRanking");
+
+    await set(puntosRef, puntos);
+
+    console.log("Puntos sincronizados con Firebase");
+  } catch (error) {
+    console.error("No se pudieron sincronizar los puntos:", error);
+  }
+}
+async function cargarPuntosFirebase(){
+  try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) return;
+
+    const puntosRef = ref(db, "usuarios/" + usuario.uid + "/puntosRanking");
+    const snapshot = await get(puntosRef);
+
+    if (snapshot.exists()) {
+      puntos = snapshot.val();
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(puntos));
+
+      renderRanking();
+
+      console.log("Puntos cargados desde Firebase");
+    } else {
+      console.log("No hay puntos guardados en Firebase todavía");
+    }
+  } catch (error) {
+    console.error("No se pudieron cargar los puntos:", error);
+  }
+}
+  
 function cargarPuntosGuardados(){
   const data = localStorage.getItem(STORAGE_KEY);
   if(!data) return;
