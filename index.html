@@ -665,9 +665,24 @@ function cargarPaises(){
   });
 }
 
-function guardarPaisesCustom(){
+async function guardarPaisesCustom(){
   const custom = paises.filter(p => !paisesBase.includes(p));
+
   localStorage.setItem(STORAGE_PAISES, JSON.stringify(custom));
+
+  try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) return;
+
+    const paisesRef = ref(db, "usuarios/" + usuario.uid + "/paisesCustom");
+
+    await set(paisesRef, custom);
+
+    console.log("Países personalizados sincronizados con Firebase");
+  } catch (error) {
+    console.error("No se pudieron sincronizar los países:", error);
+  }
 }
 
 function guardarImagenesPaises(){
