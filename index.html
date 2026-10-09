@@ -317,13 +317,10 @@ async function cargarPaisesCustomFirebase() {
 
     const snapshot = await get(paisesRef);
 
-    if (!snapshot.exists()) {
-      console.log("No hay países personalizados en Firebase");
-      return;
-    }
-
-    const personalizados = snapshot.val();
-
+  const personalizados = snapshot.exists()
+  ? snapshot.val()
+  : [];
+    
     // Quitar los países personalizados que están guardados
     // actualmente en este dispositivo
     for (let i = paises.length - 1; i >= 0; i--) {
