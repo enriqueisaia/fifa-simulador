@@ -386,6 +386,13 @@ onAuthStateChanged(auth, user => {
     <div class="preview-bandera" id="previewNuevoPais">
       <span class="sin-imagen">Sin imagen seleccionada</span>
     </div>
+<div class="bloque" id="administrarPaisesCustom">
+  <h3>🌎 Mis países personalizados</h3>
+  <p class="sub">Aquí puedes consultar y eliminar las selecciones que hayas creado.</p>
+  <div id="listaPaisesCustom">
+    <p class="sub">Cargando selecciones...</p>
+  </div>
+</div>
   </div>
 
   <div class="bloque">
@@ -729,8 +736,77 @@ function cargarListaPaises(){
     option.value = pais;
     datalist.appendChild(option);
   });
+  renderListaPaisesCustom();
+}
+function renderListaPaisesCustom(){
+  const contenedor = document.getElementById("listaPaisesCustom");
+
+  if (!contenedor) return;
+
+  contenedor.innerHTML = "";
+
+  const personalizados = paises.filter(
+    pais => !paisesBase.includes(pais)
+  );
+
+  if (personalizados.length === 0) {
+    contenedor.innerHTML = '<p class="sub">Todavía no has creado países personalizados.</p>';
+    return;
+  }
+
+  personalizados.forEach(pais => {
+    const fila = document.createElement("div");
+    fila.style.display = "flex";
+    fila.style.justifyContent = "space-between";
+    fila.style.alignItems = "center";
+    fila.style.gap = "10px";
+    fila.style.marginBottom = "8px";
+    fila.style.padding = "10px";
+    fila.style.borderRadius = "8px";
+    fila.style.background = "rgba(255,255,255,0.06)";
+
+    const nombre = document.createElement("span");
+    nombre.textContent = pais;
+
+    const boton = document.createElement("button");
+    boton.textContent = "Eliminar";
+    boton.style.background = "#b83232";
+
+    boton.onclick = () => eliminarPaisCustom(pais);
+
+    fila.appendChild(nombre);
+    fila.appendChild(boton);
+    contenedor.appendChild(fila);
+  });
 }
 
+function eliminarPaisCustom(pais){
+  if (paisesBase.includes(pais)) {
+    alert("No puedes eliminar una selección original.");
+    return;
+  }
+
+  const confirmar = confirm(
+    '¿Seguro que quieres eliminar "' + pais + '"?'
+  );
+
+  if (!confirmar) return;
+
+  paises = paises.filter(p => p !== pais);
+
+  delete puntos[pais];
+  delete imagenesPaises[pais];
+
+  reconstruirMapaPaises();
+  guardarPaisesCustom();
+  guardarPuntos();
+  guardarImagenesPaises();
+  cargarListaPaises();
+  renderRanking();
+
+  alert('Se eliminó "' + pais + '".');
+}
+  
 function actualizarListaTorneo(equipos){
   // Solo los países seleccionados para el torneo en curso
   const datalist = document.getElementById("listaPaisesTorneo");
