@@ -300,13 +300,98 @@ async function probarFirebase() {
     console.error("Error al conectar con Realtime Database:", error);
   }
 }
+async function probarFirebase() {
+  try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) {
+      console.log("Usuario no ha iniciado sesión todavía");
+      return;
+    }
+
+    const pruebaRef = ref(db, "usuarios/" + usuario.uid + "/prueba");
+
+    await set(pruebaRef, {
+      conectado: true,
+      fecha: new Date().toISOString()
+    });
+
+    console.log("Firebase Realtime Database conectado correctamente");
+  } catch (error) {
+    console.error("Error al conectar con Realtime Database:", error);
+  }
+}
 
 // Escucha el estado de autenticación
-onAuthStateChanged(auth, user => {
-  if(user){
-    probarFirebase();
-    cargarPuntosFirebase();
 
+async function cargarPaisesCustomFirebase() {
+  try {
+    const usuario = auth.currentUser;
+
+    if (!usuario) return;
+
+    const paisesRef = ref(
+      db,
+      "usuarios/" + usuario.uid + "/paisesCustom"
+    );
+
+    const snapshot = await get(paisesRef);
+
+    if (!snapshot.exists()) {
+      console.log("No hay países personalizados en Firebase");
+      return;
+    }
+
+    const personalizados = snapshot.val();
+
+    // Quitar los países personalizados que están guardados
+    // actualmente en este dispositivo
+    for (let i = paises.length - 1; i >= 0; i--) {
+      if (!paisesBase.includes(paises[i])) {
+        paises.splice(i, 1);
+      }
+    }
+
+    // Añadir los países que vienen de Firebase
+    personalizados.forEach(pais => {
+      if (!paises.includes(pais)) {
+        paises.push(pais);
+      }
+    });
+
+    // Guardar la lista descargada en este dispositivo
+    const custom = paises.filter(
+      pais => !paisesBase.includes(pais)
+    );
+
+    localStorage.setItem(
+      STORAGE_PAISES,
+      JSON.stringify(custom)
+    );
+
+    reconstruirMapaPaises();
+    cargarListaPaises();
+    renderRanking();
+
+    console.log(
+      "Países personalizados cargados desde Firebase"
+    );
+
+  } catch (error) {
+    console.error(
+      "No se pudieron cargar los países personalizados:",
+      error
+    );
+  }
+}
+    
+// Escucha el estado de autenticación
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    probarFirebase();
+    cargarPaisesCustomFirebase();
+    cargarPuntosFirebase();
     // Usuario autenticado → ocultar overlay, mostrar app
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("userBar").style.display = "flex";
